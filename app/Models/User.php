@@ -29,4 +29,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // 1:N (lado "tiene muchos") → proyectos que ha CREADO el usuario
+    public function ownedProjects()
+    {
+        return $this->hasMany(Project::class);   // busca projects.user_id
+    }
+
+    // N:N → proyectos en los que PARTICIPA el usuario
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class)
+                    ->withPivot('role', 'contribution_hours')
+                    ->withTimestamps();
+    }
 }

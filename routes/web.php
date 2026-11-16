@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectUserController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', ProjectController::class);
     Route::resource('users', UserController::class)
         ->only(['index', 'show']);
+
+    // Participantes de un proyecto (tabla pivote project_user)
+    Route::post('/projects/{project}/users', [ProjectUserController::class, 'store'])
+        ->name('projects.users.store');
+    Route::put('/projects/{project}/users/{user}', [ProjectUserController::class, 'update'])
+        ->name('projects.users.update');
+    Route::delete('/projects/{project}/users/{user}', [ProjectUserController::class, 'destroy'])
+        ->name('projects.users.destroy');
 });
 
 require __DIR__.'/auth.php';

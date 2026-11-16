@@ -27,6 +27,15 @@
                 </header>
             @endisset
 
+            <!-- Mensaje flash (lo envía el controlador con ->with('success', ...)) -->
+            @if (session('success'))
+                <div class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
+                    <div class="rounded-md bg-green-50 p-4 text-sm text-green-800">
+                        {{ session('success') }}
+                    </div>
+                </div>
+            @endif
+
             <!-- Page Content -->
             <main>
                 {{ $slot }}

@@ -18,11 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // CRUD de proyectos (las 7 rutas REST)
     Route::resource('projects', ProjectController::class);
-
-    // Usuarios: solo listado y ficha
-    Route::resource('users', UserController::class)->only(['index', 'show']);
+    Route::resource('users', UserController::class)
+        ->only(['index', 'show']);
 });
 
 require __DIR__.'/auth.php';

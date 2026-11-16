@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,8 @@ Route::middleware('auth')->group(function () {
     // CRUD de proyectos (las 7 rutas REST)
     Route::resource('projects', ProjectController::class);
 
+    // Usuarios: solo listado y ficha
+    Route::resource('users', UserController::class)->only(['index', 'show']);
 });
 
 require __DIR__.'/auth.php';

@@ -6,13 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    // Estados posibles: valor en la BD => texto que se muestra
-    public const STATUSES = [
-        'pending'     => 'Pendiente',
-        'in_progress' => 'En curso',
-        'completed'   => 'Completado',
-    ];
-
     // Campos que se pueden rellenar con asignación masiva: Project::create([...]) o $project->update([...])
     // user_id NO está: el creador lo pone el servidor (el usuario logueado), nunca el formulario.
     protected $fillable = ['title', 'description', 'due_date', 'status'];
@@ -39,12 +32,6 @@ class Project extends Model
         return $this->belongsToMany(User::class)
                     ->withPivot('role', 'contribution_hours')   // columnas extra de project_user
                     ->withTimestamps();                         // rellena created_at/updated_at de project_user
-    }
-
-    // Texto del estado en español: $project->statusLabel() → "En curso"
-    public function statusLabel(): string
-    {
-        return self::STATUSES[$this->status];
     }
 
     // ¿Ha pasado la fecha límite sin estar completado?

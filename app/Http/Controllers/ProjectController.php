@@ -17,7 +17,9 @@ class ProjectController extends Controller
 
     public function create()
     {
-        return view('projects.create');
+        $project = new Project();   // proyecto vacío, para que el formulario sea igual que el de editar
+
+        return view('projects.create', ['project' => $project]);
     }
 
     public function store(Request $request)

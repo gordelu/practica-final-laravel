@@ -1,42 +1,55 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Proyectos</h2>
-
-            <a href="{{ route('projects.create') }}"
-               class="inline-flex items-center px-4 py-2 bg-gray-800 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                Nuevo proyecto
-            </a>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="page-title">Proyectos</h1>
+                <p class="page-subtitle">{{ $projects->count() }} proyectos en la plataforma</p>
+            </div>
+            <a href="{{ route('projects.create') }}" class="btn-primary">+ Nuevo proyecto</a>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if ($projects->isEmpty())
-                <div class="bg-white shadow-sm sm:rounded-lg p-6 text-gray-600">
-                    Todavía no hay proyectos.
-                </div>
-            @else
-                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach ($projects as $project)
-                        <a href="{{ route('projects.show', $project) }}"
-                           class="block bg-white shadow-sm sm:rounded-lg p-6 hover:shadow-md transition">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="font-semibold text-lg text-gray-900">{{ $project->title }}</h3>
-                                <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">
-                                    {{ $project->statusLabel() }}
-                                </span>
-                            </div>
-
-                            <p class="mt-2 text-sm text-gray-600">{{ Str::limit($project->description, 100) }}</p>
-
-                            <p class="mt-4 text-xs text-gray-500">
-                                Creado por {{ $project->owner->name }} · Fecha límite: {{ $project->due_date->format('d/m/Y') }}
-                            </p>
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+    @if ($projects->isEmpty())
+        <div class="card flex flex-col items-center py-16 text-center">
+            <x-application-logo class="h-12 w-12 opacity-80" />
+            <h2 class="mt-4 text-lg font-bold text-slate-900">Todavía no hay proyectos</h2>
+            <p class="mt-1 text-sm text-slate-500">Crea el primero e invita a tu equipo.</p>
+            <a href="{{ route('projects.create') }}" class="btn-primary mt-6">Crear proyecto</a>
         </div>
-    </div>
+    @else
+        <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            @foreach ($projects as $project)
+                <a href="{{ route('projects.show', $project) }}"
+                   class="group flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70 transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-brand-300">
+
+                    <div class="flex items-center justify-between gap-2">
+                        <x-status-badge :status="$project->status" />
+                        @if ($project->user_id === auth()->id())
+                            <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-brand-700">Tuyo</span>
+                        @endif
+                    </div>
+
+                    <h2 class="mt-4 text-lg font-bold text-slate-900 group-hover:text-brand-700">{{ $project->title }}</h2>
+                    {{-- line-clamp-3: muestra como mucho 3 líneas de la descripción --}}
+                    <p class="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-500">{{ $project->description }}</p>
+
+                    <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+                        {{-- Avatares del equipo --}}
+                        <div class="flex -space-x-2">
+                            @foreach ($project->users as $user)
+                                <x-avatar :user="$user" size="sm" />
+                            @endforeach
+                        </div>
+
+                        <span class="text-xs font-semibold text-slate-500">
+                            📅 {{ $project->due_date->format('d/m/Y') }}
+                            @if ($project->isOverdue())
+                                <span class="ml-1 text-rose-600">Vencido</span>
+                            @endif
+                        </span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    @endif
 </x-app-layout>

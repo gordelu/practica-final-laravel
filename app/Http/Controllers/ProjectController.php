@@ -50,12 +50,21 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
+        // Solo el creador puede editar (aunque escriba la URL a mano)
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         return view('projects.edit', ['project' => $project]);
     }
 
     public function update(Request $request, string $id)
     {
         $project = Project::findOrFail($id);
+
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         $data = $this->validateProject($request);
 
@@ -68,6 +77,10 @@ class ProjectController extends Controller
     public function destroy(string $id)
     {
         $project = Project::findOrFail($id);
+
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         $project->delete();   // sus filas de project_user se borran en cascada
 

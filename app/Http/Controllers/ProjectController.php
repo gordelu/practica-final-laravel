@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -35,7 +36,14 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
-        return view('projects.show', ['project' => $project]);
+        // Usuarios que todavía no participan (para el desplegable de añadir participante)
+        $participantIds = $project->users->pluck('id');                     // ids de los participantes: [2, 3]
+        $availableUsers = User::whereNotIn('id', $participantIds)->get();   // usuarios cuyo id NO está en esa lista
+
+        return view('projects.show', [
+            'project'        => $project,
+            'availableUsers' => $availableUsers,
+        ]);
     }
 
     public function edit(string $id)

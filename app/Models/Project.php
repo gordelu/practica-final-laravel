@@ -46,4 +46,26 @@ class Project extends Model
     {
         return self::STATUSES[$this->status];
     }
+
+    // ¿Ha pasado la fecha límite sin estar completado?
+    public function isOverdue(): bool
+    {
+        if ($this->status === 'completed') {
+            return false;
+        }
+
+        return $this->due_date->isPast();
+    }
+
+    // Suma de las horas de todos los participantes
+    public function totalHours()
+    {
+        $total = 0;
+
+        foreach ($this->users as $user) {
+            $total = $total + $user->pivot->contribution_hours;
+        }
+
+        return $total;
+    }
 }

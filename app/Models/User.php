@@ -43,4 +43,16 @@ class User extends Authenticatable
                     ->withPivot('role', 'contribution_hours')
                     ->withTimestamps();
     }
+
+    // Suma de las horas que ha aportado en todos sus proyectos
+    public function totalHours()
+    {
+        $total = 0;
+
+        foreach ($this->projects as $project) {
+            $total = $total + $project->pivot->contribution_hours;
+        }
+
+        return $total;
+    }
 }

@@ -14,7 +14,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== $request->user()->id) {
+        if ($project->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -43,7 +43,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== $request->user()->id) {
+        if ($project->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -60,11 +60,11 @@ class ProjectUserController extends Controller
     }
 
     // DELETE /projects/{project}/users/{user} → quitar participante
-    public function destroy(Request $request, string $projectId, string $userId)
+    public function destroy(string $projectId, string $userId)
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== $request->user()->id) {
+        if ($project->user_id !== auth()->id()) {
             abort(403);
         }
 

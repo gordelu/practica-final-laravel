@@ -27,7 +27,7 @@ class ProjectController extends Controller
         $data = $this->validateProject($request);
 
         $project = new Project($data);
-        $project->user_id = $request->user()->id;   // el creador es el usuario logueado
+        $project->user_id = auth()->id();   // el creador es el usuario logueado
         $project->save();
 
         return redirect()->route('projects.show', $project)

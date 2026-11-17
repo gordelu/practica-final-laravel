@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 // Participantes de un proyecto (tabla pivote project_user).
 // Solo el creador del proyecto puede añadir, modificar o quitar participantes.
@@ -14,7 +15,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -43,7 +44,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -64,7 +65,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
 
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -27,7 +28,7 @@ class ProjectController extends Controller
         $data = $this->validateProject($request);
 
         $project = new Project($data);
-        $project->user_id = auth()->id();   // el creador es el usuario logueado
+        $project->user_id = Auth::id();   // el creador es el usuario logueado
         $project->save();
 
         return redirect()->route('projects.show', $project)
@@ -53,7 +54,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         // Solo el creador puede editar (aunque escriba la URL a mano)
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -64,7 +65,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -80,7 +81,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
-        if ($project->user_id !== auth()->id()) {
+        if ($project->user_id !== Auth::id()) {
             abort(403);
         }
 

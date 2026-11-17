@@ -1,5 +1,5 @@
 @php
-    $user = auth()->user();
+    $user = Auth::user();
 @endphp
 
 <x-app-layout>

@@ -13,7 +13,7 @@
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-bold text-slate-900 group-hover:text-brand-700">
                         {{ $user->name }}
-                        @if ($user->id === auth()->id())
+                        @if ($user->id === Auth::id())
                             <span class="ml-1 text-xs font-semibold text-slate-400">(tú)</span>
                         @endif
                     </p>

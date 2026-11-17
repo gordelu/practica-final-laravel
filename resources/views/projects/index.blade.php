@@ -24,7 +24,7 @@
 
                     <div class="flex items-center justify-between gap-2">
                         <x-status-badge :status="$project->status" />
-                        @if ($project->user_id === auth()->id())
+                        @if ($project->user_id === Auth::id())
                             <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-brand-700">Tuyo</span>
                         @endif
                     </div>

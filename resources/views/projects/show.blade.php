@@ -12,7 +12,7 @@
             </div>
 
             {{-- Solo el creador ve los botones (el controlador también lo comprueba) --}}
-            @if (auth()->id() === $project->user_id)
+            @if (Auth::id() === $project->user_id)
                 <div class="flex items-center gap-2">
                     <a href="{{ route('projects.edit', $project) }}" class="btn-secondary">Editar</a>
 
@@ -50,7 +50,7 @@
                         Este proyecto todavía no tiene participantes.
                     </div>
 
-                @elseif (auth()->id() === $project->user_id)
+                @elseif (Auth::id() === $project->user_id)
                     {{-- Creador: puede cambiar rol y horas, y quitar participantes --}}
 
                     {{-- Errores del formulario de editar (van en la bolsa 'participant') --}}
@@ -152,7 +152,7 @@
             </div>
 
             {{-- Añadir participante: solo el creador --}}
-            @if (auth()->id() === $project->user_id)
+            @if (Auth::id() === $project->user_id)
                 <div class="card">
                     <h2 class="card-title">Añadir participante</h2>
 

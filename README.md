@@ -1,58 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Proyecta · Plataforma de gestión de proyectos colaborativos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Práctica final del tema 3 (Laravel) de Desarrollo Web en Entorno Servidor.
 
-## About Laravel
+Los usuarios pueden crear proyectos y añadir a otros usuarios como participantes, con un **rol** y las **horas** que han trabajado en cada proyecto.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Funcionalidades
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Autenticación** con Laravel Breeze: registro, login, perfil. Solo los usuarios logueados pueden ver y crear proyectos.
+- **CRUD de proyectos**: título, descripción, fecha límite y estado (pendiente, en curso, completado).
+- **Autorización**: solo el creador de un proyecto puede editarlo, borrarlo y gestionar su equipo (403 aunque se escriba la URL a mano).
+- **Participantes (N:N)**: desde el detalle del proyecto, el creador añade usuarios con su rol y sus horas, los modifica o los quita. La tabla pivote `project_user` guarda `role` y `contribution_hours`.
+- **Listado y ficha de usuarios** con los proyectos que han creado y en los que participan.
+- **Landing page** para visitantes, panel con resumen y diseño propio con Tailwind CSS. Interfaz en español.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Base de datos
 
-## Learning Laravel
+| Tabla | Contenido |
+|---|---|
+| `users` | Usuarios (de Breeze) |
+| `projects` | Proyectos. `user_id` = creador (relación 1:N con `users`) |
+| `project_user` | Participantes (relación N:N), con `role` y `contribution_hours` |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Puesta en marcha
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Requisitos: Docker Desktop (en Windows, con WSL 2 y Ubuntu). Los comandos se ejecutan en la consola de Ubuntu, dentro de la carpeta del proyecto.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+1. Si no existe el archivo `.env`, crearlo a partir del ejemplo:
 
-## Agentic Development
+   ```bash
+   cp .env.example .env
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+2. Si no existe la carpeta `vendor/`, instalar las dependencias de PHP con un contenedor temporal:
 
-```bash
-composer require laravel/boost --dev
+   ```bash
+   docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/var/www/html" -w /var/www/html \
+       laravelsail/php84-composer:latest composer install --ignore-platform-reqs
+   ```
 
-php artisan boost:install
-```
+3. Arrancar los contenedores y preparar la aplicación:
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+   ```bash
+   ./vendor/bin/sail up -d
+   ./vendor/bin/sail artisan key:generate      # solo si APP_KEY está vacío en .env
+   ./vendor/bin/sail artisan migrate
+   ```
 
-## Contributing
+4. Si no existe la carpeta `public/build/`, compilar el CSS y el JavaScript:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   ```bash
+   ./vendor/bin/sail npm install
+   ./vendor/bin/sail npm run build
+   ```
 
-## Code of Conduct
+5. (Opcional) Cargar datos de prueba:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   ./vendor/bin/sail artisan db:seed
+   ```
 
-## Security Vulnerabilities
+La aplicación queda en <http://localhost>.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Usuarios de prueba (después de `db:seed`)
 
-## License
+| Email | Contraseña |
+|---|---|
+| ana@example.com | password |
+| luis@example.com | password |
+| marta@example.com | password |
+| carlos@example.com | password |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Código propio
+
+| Archivo | Qué hace |
+|---|---|
+| `database/migrations/*_create_projects_table.php` | Tabla de proyectos |
+| `database/migrations/*_create_project_user_table.php` | Tabla pivote de participantes |
+| `database/seeders/UserSeeder.php`, `ProjectSeeder.php` | Datos de prueba |
+| `app/Models/Project.php`, `app/Models/User.php` | Modelos y relaciones (`owner`, `users`, `ownedProjects`, `projects`) |
+| `app/Http/Controllers/ProjectController.php` | CRUD de proyectos |
+| `app/Http/Controllers/ProjectUserController.php` | Añadir, modificar y quitar participantes |
+| `app/Http/Controllers/UserController.php` | Listado y ficha de usuarios |
+| `routes/web.php` | Rutas (todas las de la aplicación dentro del middleware `auth`) |
+| `resources/views/projects/`, `resources/views/users/` | Vistas de proyectos y usuarios |
+| `resources/views/components/avatar.blade.php`, `status-badge.blade.php` | Componentes propios |
+| `resources/views/welcome.blade.php`, `dashboard.blade.php` | Landing page y panel |
+| `lang/` | Traducciones al español |
+
+El resto de controladores de autenticación, sus rutas (`routes/auth.php`) y sus vistas son de Laravel Breeze. En ellas solo se ha cambiado el aspecto.
